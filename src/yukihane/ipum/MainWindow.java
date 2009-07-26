@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.table.TableColumn;
-import yukihane.ipum.MyTableModel.ProgressCellRenderer;
+import yukihane.ipum.MyTableModel.StatusCellRenderer;
 
 /**
  *
@@ -33,7 +33,7 @@ public class MainWindow extends javax.swing.JFrame {
         initComponents();
 
         final TableColumn column = mainTable.getColumnModel().getColumn(1);
-        column.setCellRenderer(new ProgressCellRenderer());
+        column.setCellRenderer(new StatusCellRenderer());
 
         DropTargetListener dtl = new DropTargetAdapter() {
 

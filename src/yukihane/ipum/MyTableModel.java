@@ -35,7 +35,7 @@ public class MyTableModel extends AbstractTableModel {
                 ret = rowItem.getInput().getName();
                 break;
             case 1:
-                ret = Integer.valueOf(rowItem.getProgress());
+                ret = rowItem.getStatus();
                 break;
             default:
         }
@@ -47,13 +47,13 @@ public class MyTableModel extends AbstractTableModel {
         return COLUMN_NAMES[modelIndex];
     }
 
-    public static class ProgressCellRenderer extends DefaultTableCellRenderer {
+    public static class StatusCellRenderer extends DefaultTableCellRenderer {
 
         private static final String DONE = "完了";
         private static final String NOT_START = "待機中";
         private final JProgressBar b = new JProgressBar(0, 100);
 
-        public ProgressCellRenderer() {
+        public StatusCellRenderer() {
             super();
             setOpaque(true);
 //            b.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
@@ -64,16 +64,24 @@ public class MyTableModel extends AbstractTableModel {
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus,
                 int row, int column) {
-            Integer i = (Integer) value;
-            String text = DONE;
-            if (i < 0) {
-                text = NOT_START;
-            } else if (i < 100) {
-                b.setValue(i);
+            final Status status = (Status) value;
+            final Status.State state = status.getState();
+            if (state == Status.State.CONVERTING) {
+                b.setValue(status.getProgress());
+                return b;
+            } else if (state == Status.State.DONE) {
+                b.setValue(100);
                 return b;
             }
-            super.getTableCellRendererComponent(table, text, isSelected, hasFocus, row, column);
-            return this;
+
+            String text = "";
+            if (state == Status.State.NOT_STARTED) {
+                text = "待機中";
+            } else if (state == Status.State.FAIL) {
+                text = "変換失敗";
+            }
+
+            return super.getTableCellRendererComponent(table, text, isSelected, hasFocus, row, column);
         }
     }
 }
