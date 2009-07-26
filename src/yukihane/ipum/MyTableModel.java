@@ -9,12 +9,10 @@ public class MyTableModel extends DefaultTableModel {
     private static final ColumnContext[] columnArray = {
         new ColumnContext("ファイル名", String.class, true),
         new ColumnContext("ステータス", JProgressBar.class, true),};
-    private int number = 0;
 
     public void addItem(Item t) {
         Object[] obj = {t.getName()};
         super.addRow(obj);
-        number++;
     }
 
     @Override
