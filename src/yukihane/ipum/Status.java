@@ -5,10 +5,18 @@ package yukihane.ipum;
  *
  * @author yuki
  */
-public class Status {
+public class Status implements Cloneable {
 
     private State state = State.NOT_STARTED;
     private int progress = -1;
+
+    public Status() {
+    }
+
+    private Status(State state, int progress) {
+        this.state = state;
+        this.progress = progress;
+    }
 
     public enum State {
 
@@ -34,7 +42,17 @@ public class Status {
         if (progress < 0 || progress > 100) {
             throw new IllegalArgumentException();
         }
-        this.progress = progress;
-        this.state = State.CONVERTING;
+
+        if (progress == 100) {
+            this.state = State.DONE;
+        } else {
+            this.progress = progress;
+            this.state = State.CONVERTING;
+        }
+    }
+
+    @Override
+    public Object clone() {
+        return new Status(this.state, this.progress);
     }
 }

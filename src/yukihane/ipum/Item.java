@@ -17,6 +17,14 @@ public class Item {
     }
 
     public Status getStatus() {
-        return status;
+        return (Status) status.clone();
+    }
+
+    public void setStatus(Status.State state) {
+        status.setState(state);
+    }
+
+    public void setStatus(int state) {
+        status.setProgress(state);
     }
 }
