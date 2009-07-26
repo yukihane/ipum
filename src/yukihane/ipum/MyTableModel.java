@@ -10,7 +10,7 @@ public class MyTableModel extends DefaultTableModel {
     private int number = 0;
 
     public void addItem(Item t) {
-        Object[] obj = {number, t.getName(), t.getComment()};
+        Object[] obj = {t.getName()};
         super.addRow(obj);
         number++;
     }

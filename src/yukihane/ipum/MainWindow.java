@@ -59,7 +59,7 @@ public class MainWindow extends javax.swing.JFrame {
                 } catch (UnsupportedFlavorException ex) {
                     Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                dtde.rejectDrop();
+//                dtde.rejectDrop();
             }
         };
 
