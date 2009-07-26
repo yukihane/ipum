@@ -2,53 +2,49 @@
 package yukihane.ipum;
 
 import java.awt.Component;
+import java.util.ArrayList;
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 
-public class MyTableModel extends DefaultTableModel {
+public class MyTableModel extends AbstractTableModel {
 
-    private static final ColumnContext[] columnArray = {
-        new ColumnContext("ファイル名", String.class, true),
-        new ColumnContext("ステータス", JProgressBar.class, true),};
+    private final ArrayList<Item> tableData = new ArrayList<Item>();
+    private final String[] COLUMN_NAMES = {"ファイル名", "ステータス"};
 
-    public void addItem(Item t) {
-        Object[] obj = {t.getInput().getName(), Integer.valueOf(-1)};
-        super.addRow(obj);
+    public void addItem(Item item) {
+        tableData.add(item);
+        final int insertedRow = tableData.size() - 1;
+        fireTableRowsInserted(insertedRow, insertedRow);
     }
 
-    @Override
-    public boolean isCellEditable(int row, int col) {
-        return columnArray[col].isEditable;
+    public int getRowCount() {
+        return tableData.size();
     }
 
-    @Override
-    public Class<?> getColumnClass(int modelIndex) {
-        return columnArray[modelIndex].columnClass;
-    }
-
-    @Override
     public int getColumnCount() {
-        return columnArray.length;
+        return COLUMN_NAMES.length;
+    }
+
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        final Item rowItem = tableData.get(rowIndex);
+        Object ret = null;
+        switch (columnIndex) {
+            case 0:
+                ret = rowItem.getInput().getName();
+                break;
+            case 1:
+                ret = Integer.valueOf(rowItem.getProgress());
+                break;
+            default:
+        }
+        return ret;
     }
 
     @Override
     public String getColumnName(int modelIndex) {
-        return columnArray[modelIndex].columnName;
-    }
-
-    private static class ColumnContext {
-
-        public final String columnName;
-        public final Class columnClass;
-        public final boolean isEditable;
-
-        public ColumnContext(String columnName, Class columnClass, boolean isEditable) {
-            this.columnName = columnName;
-            this.columnClass = columnClass;
-            this.isEditable = isEditable;
-        }
+        return COLUMN_NAMES[modelIndex];
     }
 
     public static class ProgressCellRenderer extends DefaultTableCellRenderer {
