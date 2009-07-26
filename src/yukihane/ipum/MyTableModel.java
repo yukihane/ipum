@@ -1,12 +1,14 @@
 /* $Id$ */
 package yukihane.ipum;
 
+import javax.swing.JProgressBar;
 import javax.swing.table.DefaultTableModel;
 
 public class MyTableModel extends DefaultTableModel {
 
     private static final ColumnContext[] columnArray = {
-        new ColumnContext("Name", String.class, true),};
+        new ColumnContext("ファイル名", String.class, true),
+        new ColumnContext("ステータス", JProgressBar.class, true),};
     private int number = 0;
 
     public void addItem(Item t) {
