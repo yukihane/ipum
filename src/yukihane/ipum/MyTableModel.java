@@ -49,8 +49,6 @@ public class MyTableModel extends AbstractTableModel {
 
     public static class StatusCellRenderer extends DefaultTableCellRenderer {
 
-        private static final String DONE = "完了";
-        private static final String NOT_START = "待機中";
         private final JProgressBar b = new JProgressBar(0, 100);
 
         public StatusCellRenderer() {
