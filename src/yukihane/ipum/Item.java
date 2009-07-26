@@ -1,28 +1,16 @@
 package yukihane.ipum;
 
+import java.io.File;
 
 public class Item {
 
-    private String name, comment;
+    private final File input;
 
-    public Item(String name, String comment) {
-        this.name = name;
-        this.comment = comment;
+    public Item(File file) {
+        this.input = file;
     }
 
-    public void setName(String str) {
-        name = str;
-    }
-
-    public void setComment(String str) {
-        comment = str;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getComment() {
-        return comment;
+    File getInput() {
+        return this.input;
     }
 }

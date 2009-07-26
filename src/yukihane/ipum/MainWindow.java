@@ -55,7 +55,9 @@ public class MainWindow extends javax.swing.JFrame {
                         for (Object o : list) {
                             if (o instanceof File) {
                                 File file = (File) o;
-                                model.addItem(new Item(file.getName(), file.getAbsolutePath()));
+                                if (file.isFile()) {
+                                    model.addItem(new Item(file));
+                                }
                             }
                         }
                     }

@@ -14,7 +14,7 @@ public class MyTableModel extends DefaultTableModel {
         new ColumnContext("ステータス", JProgressBar.class, true),};
 
     public void addItem(Item t) {
-        Object[] obj = {t.getName(), Integer.valueOf(-1)};
+        Object[] obj = {t.getInput().getName(), Integer.valueOf(-1)};
         super.addRow(obj);
     }
 
