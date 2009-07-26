@@ -6,13 +6,10 @@ import javax.swing.table.DefaultTableModel;
 public class MyTableModel extends DefaultTableModel {
 
     private static final ColumnContext[] columnArray = {
-        new ColumnContext("No.", Integer.class, false),
-        new ColumnContext("Name", String.class, true),
-        new ColumnContext("Full Path", String.class, true)
-    };
+        new ColumnContext("Name", String.class, true),};
     private int number = 0;
 
-    public void addTest(Test t) {
+    public void addItem(Item t) {
         Object[] obj = {number, t.getName(), t.getComment()};
         super.addRow(obj);
         number++;
@@ -52,28 +49,3 @@ public class MyTableModel extends DefaultTableModel {
     }
 }
 
-class Test {
-
-    private String name, comment;
-
-    public Test(String name, String comment) {
-        this.name = name;
-        this.comment = comment;
-    }
-
-    public void setName(String str) {
-        name = str;
-    }
-
-    public void setComment(String str) {
-        comment = str;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-}

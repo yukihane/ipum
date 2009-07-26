@@ -50,7 +50,8 @@ public class MainWindow extends javax.swing.JFrame {
                         for (Object o : list) {
                             if (o instanceof File) {
                                 File file = (File) o;
-                                model.addTest(new Test(file.getName(), file.getAbsolutePath()));
+                                model.addItem(new Item(file.getName(), file.getAbsolutePath()));
+                                model.addFile(file);
                             }
                         }
                     }
