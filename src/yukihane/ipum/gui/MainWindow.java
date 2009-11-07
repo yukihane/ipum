@@ -1,5 +1,5 @@
 /* $Id$ */
-package yukihane.ipum;
+package yukihane.ipum.gui;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.table.TableColumn;
-import yukihane.ipum.MyTableModel.StatusCellRenderer;
+import yukihane.ipum.gui.MyTableModel.StatusCellRenderer;
 
 /**
  *

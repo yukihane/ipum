@@ -1,5 +1,5 @@
 /* $Id$ */
-package yukihane.ipum;
+package yukihane.ipum.gui;
 
 import java.awt.Component;
 import java.util.ArrayList;

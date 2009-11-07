@@ -1,5 +1,5 @@
 /* $Id$ */
-package yukihane.ipum;
+package yukihane.ipum.gui;
 
 import java.io.File;
 
