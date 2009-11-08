@@ -27,6 +27,11 @@ public class Config {
         return new File(properties.getString("path.ffmpeg"));
     }
 
+    /** MP4Boxのパス. */
+    public File getMp4boxPath() {
+        return new File(properties.getString("path.mp4box"));
+    }
+
     /** 変換後ファイルの出力先. */
     /** FFMPEGを何個同時起動するか. */
     public File getOutputDir() {
@@ -80,6 +85,7 @@ public class Config {
 //    }
     private void initializeProperties() throws ConfigurationException {
         properties.addProperty("path.ffmpeg", new File("bin", "ffmpeg.exe").toString());
+        properties.addProperty("path.mp4box", new File("bin", "MP4Box.exe").toString());
         properties.addProperty("path.output", new File("output").toString());
         properties.addProperty("path.temp", new File("temp").toString());
         properties.addProperty("ffmpeg.threadnum", 1);

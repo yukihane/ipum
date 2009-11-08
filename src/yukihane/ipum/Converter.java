@@ -46,9 +46,16 @@ public class Converter implements Callable<File> {
         String[] defArgs = new String[]{"-y", "-acodec", "${acodec}", "-i", "${infile}", "${outfile}"};
         commandLine.addArguments(defArgs);
 
-        File outfile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + "." + type.
-                getDstFileType().getExtension());
+        File outfile = null;
         try {
+            if (type.getDstFileType() == DstFileType.AAC) {
+                outfile = File.createTempFile("tmp", "." + DstFileType.AAC.getExtension(), config.getTempDir());
+                outfile.deleteOnExit();
+            } else {
+                outfile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + "." + type.
+                        getDstFileType().getExtension());
+            }
+
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("acodec", "copy");
             if (type == SrcFileType.SWF && Cws2Fws.isCws(file)) {
@@ -61,13 +68,21 @@ public class Converter implements Callable<File> {
                 params.put("infile", file.toString());
             }
             params.put("outfile", outfile.toString());
-
             commandLine.setSubstitutionMap(params);
-
             System.out.println(commandLine);
 
             Executor executor = new DefaultExecutor();
             res = executor.execute(commandLine);
+
+            if (res == 0 && type.getDstFileType() == DstFileType.AAC) {
+                File realOutFile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + ".m4a");
+                CommandLine mp4box = CommandLine.parse(config.getMp4boxPath().toString());
+                mp4box.addArguments(new String[]{"-add", outfile.toString(), realOutFile.toString()});
+                System.out.println(mp4box);
+                res = new DefaultExecutor().execute(mp4box);
+                outfile.delete();
+                outfile = realOutFile;
+            }
         } catch (Exception ex) {
             Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
