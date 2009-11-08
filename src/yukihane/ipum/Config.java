@@ -35,7 +35,7 @@ class Config {
 
     /** 作業用の一時ファイルを置くディレクトリ. */
     public File getTempDir() {
-        return new File(properties.getString("path.output"));
+        return new File(properties.getString("path.temp"));
     }
 
     /** FFMPEGをいくつ同時起動するか. */
