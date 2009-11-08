@@ -84,8 +84,8 @@ public class Config {
 //        }
 //    }
     private void initializeProperties() throws ConfigurationException {
-        properties.addProperty("path.ffmpeg", new File("bin", "ffmpeg.exe").toString());
-        properties.addProperty("path.mp4box", new File("bin", "MP4Box.exe").toString());
+        properties.addProperty("path.ffmpeg", new File("lib", "ffmpeg.exe").toString());
+        properties.addProperty("path.mp4box", new File("lib", "MP4Box.exe").toString());
         properties.addProperty("path.output", new File("output").toString());
         properties.addProperty("path.temp", new File("temp").toString());
         properties.addProperty("ffmpeg.threadnum", 1);
