@@ -123,6 +123,7 @@ public class MainWindow extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         propertyButton.setText("Property");
+        propertyButton.setEnabled(false);
 
         mainTable.setModel(model);
         scrollPane.setViewportView(mainTable);

@@ -48,6 +48,7 @@
     <Component class="javax.swing.JButton" name="propertyButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Property"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="scrollPane">
