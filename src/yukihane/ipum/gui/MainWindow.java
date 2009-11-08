@@ -10,6 +10,9 @@ import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -31,6 +34,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private final MyTableModel model = new MyTableModel();
     private final Controller controller;
+    private final Thread controllerThread;
 
     /** Creates new form MainWindow */
     public MainWindow() {
@@ -49,9 +53,17 @@ public class MainWindow extends javax.swing.JFrame {
                 });
             }
         };
-        Thread thread = new Thread(controller);
-        thread.setDaemon(true);
-        thread.start();
+        controllerThread = new Thread(controller);
+        controllerThread.start();
+
+        addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                controller.stop();
+                controllerThread.interrupt();
+            }
+        });
 
         final TableColumn column = mainTable.getColumnModel().getColumn(1);
         column.setCellRenderer(new StatusCellRenderer());
@@ -108,7 +120,7 @@ public class MainWindow extends javax.swing.JFrame {
         scrollPane = new javax.swing.JScrollPane();
         mainTable = new javax.swing.JTable();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         propertyButton.setText("Property");
 

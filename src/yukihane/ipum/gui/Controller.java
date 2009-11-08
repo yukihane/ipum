@@ -34,11 +34,12 @@ public abstract class Controller implements Runnable {
         while (true) {
             try {
                 if (stop) {
+                    executors.shutdownNow();
                     break;
                 }
                 notifyEvent(this.queue.take());
             } catch (InterruptedException ex) {
-                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+                System.out.println("終了要求");
             }
         }
     }
