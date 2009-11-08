@@ -11,14 +11,14 @@ import org.apache.commons.configuration.XMLConfiguration;
  *
  * @author yuki
  */
-class Config {
+public class Config {
 
     private final static String APPLICATION_NAME = "ipum";
     private final static String CONFIG_NAME = APPLICATION_NAME + ".xml";
     private static Config instance = new Config();
     private static XMLConfiguration properties;
 
-    static Config getInstance() {
+    public static Config getInstance() {
         return instance;
     }
 
