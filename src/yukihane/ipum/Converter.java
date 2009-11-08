@@ -12,12 +12,12 @@ import org.apache.commons.exec.Executor;
 import org.apache.commons.io.FilenameUtils;
 import yukihane.swf.Cws2Fws;
 
-class Converter implements Callable<File> {
+public class Converter implements Callable<File> {
 
     private final Config config;
     private final File file;
 
-    Converter(Config config, File file) {
+    public Converter(Config config, File file) {
         this.config = config;
         this.file = file;
     }
