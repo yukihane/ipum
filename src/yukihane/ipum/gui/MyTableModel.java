@@ -2,6 +2,7 @@
 package yukihane.ipum.gui;
 
 import java.awt.Component;
+import java.io.File;
 import java.util.ArrayList;
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
@@ -17,6 +18,16 @@ public class MyTableModel extends AbstractTableModel {
         tableData.add(item);
         final int insertedRow = tableData.size() - 1;
         fireTableRowsInserted(insertedRow, insertedRow);
+    }
+
+    public void updateItem(File file, Status.State state) {
+        for (Item i : tableData) {
+            if (i.getInput() == file) {
+                i.setStatus(state);
+                fireTableDataChanged();
+                break;
+            }
+        }
     }
 
     public int getRowCount() {

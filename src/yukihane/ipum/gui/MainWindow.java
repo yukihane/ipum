@@ -16,8 +16,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.TableColumn;
+import yukihane.ipum.Config;
+import yukihane.ipum.Event;
 import yukihane.ipum.gui.MyTableModel.StatusCellRenderer;
 
 /**
@@ -27,10 +30,28 @@ import yukihane.ipum.gui.MyTableModel.StatusCellRenderer;
 public class MainWindow extends javax.swing.JFrame {
 
     private final MyTableModel model = new MyTableModel();
+    private final Controller controller;
 
     /** Creates new form MainWindow */
     public MainWindow() {
         initComponents();
+
+        Config config = Config.getInstance();
+        controller = new Controller(config.getThreadNum()) {
+
+            @Override
+            protected void notifyEvent(final Event event) {
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    public void run() {
+                        model.updateItem(event.getFile(), event.getStatus().getState());
+                    }
+                });
+            }
+        };
+        Thread thread = new Thread(controller);
+        thread.setDaemon(true);
+        thread.start();
 
         final TableColumn column = mainTable.getColumnModel().getColumn(1);
         column.setCellRenderer(new StatusCellRenderer());
@@ -57,6 +78,7 @@ public class MainWindow extends javax.swing.JFrame {
                                 File file = (File) o;
                                 if (file.isFile()) {
                                     model.addItem(new Item(file));
+                                    controller.addTask(Config.getInstance(), file);
                                 }
                             }
                         }
