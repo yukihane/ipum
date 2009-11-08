@@ -10,6 +10,7 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.io.FilenameUtils;
+import yukihane.swf.Cws2Fws;
 
 class Converter implements Callable<File> {
 
@@ -22,7 +23,9 @@ class Converter implements Callable<File> {
     }
 
     public File call() {
-        SrcFileType type = SrcFileType.fromFileExt(file);
+        int res = -1;
+        File tmpFile = null;
+        final SrcFileType type = SrcFileType.fromFileExt(file);
         if (type == null) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
@@ -33,21 +36,32 @@ class Converter implements Callable<File> {
 
         File outfile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + "." + type.
                 getDstFileType().getExtension());
-        HashMap<String, String> params = new HashMap<String, String>();
-        params.put("acodec", "copy");
-        params.put("infile", file.toString());
-        params.put("outfile", outfile.toString());
-
-        commandLine.setSubstitutionMap(params);
-
-        System.out.println(commandLine);
-
-        Executor executor = new DefaultExecutor();
-        int res = -1;
         try {
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("acodec", "copy");
+            if (type == SrcFileType.SWF && Cws2Fws.isCws(file)) {
+                tmpFile = File.createTempFile("tmp", "." + FilenameUtils.getExtension(file.toString()), config.
+                        getTempDir());
+                tmpFile.deleteOnExit();
+                Cws2Fws.createFws(file, tmpFile);
+                params.put("infile", tmpFile.toString());
+            } else {
+                params.put("infile", file.toString());
+            }
+            params.put("outfile", outfile.toString());
+
+            commandLine.setSubstitutionMap(params);
+
+            System.out.println(commandLine);
+
+            Executor executor = new DefaultExecutor();
             res = executor.execute(commandLine);
         } catch (Exception ex) {
             Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (tmpFile != null && tmpFile.exists()) {
+                tmpFile.delete();
+            }
         }
 
         if (res != 0) {
