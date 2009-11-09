@@ -46,7 +46,14 @@ public class Converter implements Callable<File> {
         File tmpFile = null;
         final SrcFileType type = SrcFileType.fromFileExt(file);
         if (type == null) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            status.setState(Status.State.FAIL);
+            Event event = new Event(file, status);
+            try {
+                queue.put(event);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return null;
         }
 
         CommandLine commandLine = CommandLine.parse(config.getFfmpegPath().toString());
@@ -108,20 +115,21 @@ public class Converter implements Callable<File> {
                 Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
             }
             return null;
-        } else {
-            status.setState(Status.State.DONE);
-            Event event = new Event(file, status);
-            try {
-                queue.put(event);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            if (config.isUseID3()) {
-                createID3(config, outfile);
-            }
-            return outfile;
         }
+
+        status.setState(Status.State.DONE);
+        Event event = new Event(file, status);
+        try {
+            queue.put(event);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // 今のところmp3でしか埋め込み出来ない
+        if (type.getDstFileType() == DstFileType.MP3 && config.isUseID3()) {
+            createID3(config, outfile);
+        }
+        return outfile;
     }
 
     private void createID3(Config config, File file) {
