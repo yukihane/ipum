@@ -53,7 +53,5 @@ public final class NicoVideoInfoManager {
             return null;
         }
         return results.get(results.size() - 1);
-
-
     }
 }
