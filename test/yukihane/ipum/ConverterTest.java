@@ -7,6 +7,7 @@ package yukihane.ipum;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.LinkedBlockingQueue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -30,7 +31,7 @@ public class ConverterTest {
     public void testRunWithNotExistFile() throws InterruptedException, ExecutionException {
         Config config = Config.getInstance();
         File file = new File("not_exist_file.mp4");
-        Converter conv = new Converter(config, file);
+        Converter conv = new Converter(new LinkedBlockingQueue<Event>(), config, file);
         FutureTask<File> task = new FutureTask<File>(conv);
 
         task.run();
@@ -45,7 +46,7 @@ public class ConverterTest {
     public void testRunWithExistFile() throws InterruptedException, ExecutionException {
         Config config = Config.getInstance();
         File file = new File("testdata", "testdata.mp4");
-        Converter conv = new Converter(config, file);
+        Converter conv = new Converter(new LinkedBlockingQueue<Event>(), config, file);
         FutureTask<File> task = new FutureTask<File>(conv);
 
         task.run();
@@ -60,7 +61,7 @@ public class ConverterTest {
     public void testRunWithCwfFile() throws InterruptedException, ExecutionException {
         Config config = Config.getInstance();
         File file = new File("testdata", "testdata_cwf.swf");
-        Converter conv = new Converter(config, file);
+        Converter conv = new Converter(new LinkedBlockingQueue<Event>(), config, file);
         FutureTask<File> task = new FutureTask<File>(conv);
 
         task.run();
