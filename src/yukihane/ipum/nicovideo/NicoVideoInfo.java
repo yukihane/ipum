@@ -2,8 +2,15 @@
 package yukihane.ipum.nicovideo;
 
 import com.sun.syndication.io.impl.DateParser;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class NicoVideoInfo {
@@ -114,7 +121,42 @@ public class NicoVideoInfo {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    public File getArtWork(File tmpDir) {
+        InputStream is = null;
+        OutputStream os = null;
+        File tmpFile = null;
+        try {
+            tmpFile = File.createTempFile("tmp", ".jpg", tmpDir);
+            tmpFile.deleteOnExit();
+            os = new FileOutputStream(tmpFile);
+            is = thumbnailUrl.openStream();
+
+            byte buf[] = new byte[1024];
+            int len;
+            while ((len = is.read(buf)) > 0) {
+                os.write(buf, 0, len);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(NicoVideoInfo.class.getName()).log(Level.SEVERE, null, ex);
+            tmpFile = null;
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException ex) {
+                }
+            }
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException ex) {
+                }
+            }
+        }
+        return tmpFile;
     }
 }

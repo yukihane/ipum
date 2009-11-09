@@ -118,30 +118,38 @@ public class Converter implements Callable<File> {
             }
 
             if (config.isUseID3()) {
-                createID3(outfile);
+                createID3(config, outfile);
             }
             return outfile;
         }
     }
 
-    private void createID3(File file) {
+    private void createID3(Config config, File file) {
+        File artWorkFile = null;
         try {
             NicoVideoInfoManager manager = NicoVideoInfoManager.getInstance();
             NicoVideoInfo cont = manager.findNicoContent(file.getName());
             AudioFile f = AudioFileIO.read(file);
-            Artwork artWork = new Artwork();
-            artWork.setImageUrl(cont.getThumbnailUrl().toString());
             Tag tag = f.getTag();
+
+            artWorkFile = cont.getArtWork(config.getTempDir());
+            Artwork artWork = Artwork.createArtworkFromFile(artWorkFile);
+            artWork.setImageUrl(cont.getThumbnailUrl().toString());
             tag.createAndSetArtworkField(artWork);
             tag.setTitle(cont.getTitle());
             tag.setComment(cont.getDescription());
             Calendar cal = Calendar.getInstance();
             cal.setTime(cont.getFirstRetrieve());
             tag.addYear(Integer.toString(cal.get(Calendar.YEAR)));
+            tag.setGenre("ニコニコ動画");
             f.commit();
         } catch (Exception e) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "ID3タグ作成に失敗: " + FilenameUtils.getName(file.
                     toString()), e);
+        } finally {
+            if (artWorkFile != null) {
+                artWorkFile.delete();
+            }
         }
     }
 }
