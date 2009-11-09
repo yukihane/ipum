@@ -117,8 +117,7 @@ public class Converter implements Callable<File> {
             return null;
         }
 
-        // 今のところmp3でしか埋め込み出来ない
-        if (type.getDstFileType() == DstFileType.MP3 && config.isUseID3()) {
+        if (config.isUseID3()) {
             createID3(config, outfile);
         }
 
