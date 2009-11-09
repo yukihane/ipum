@@ -13,8 +13,10 @@ public class NicoVideoInfoManagerTest {
         System.out.println("findNicoContent");
         String fileName = "【ＭＭＤ】たこルカで、カチカチボールを作ってみた。【物理演算】.mp4";
         NicoVideoInfoManager instance = NicoVideoInfoManager.getInstance();
-        NicoContent result = instance.findNicoContent(fileName);
-        assertEquals(FilenameUtils.getBaseName(fileName), result.getFileName());
+        NicoVideoInfo result = instance.findNicoContent(fileName);
+//        assertEquals(FilenameUtils.getBaseName(fileName), result.getFileName());
+        System.out.println(result.toString());
+        fail();
         System.out.println(result.toString());
     }
 }

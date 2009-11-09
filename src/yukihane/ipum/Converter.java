@@ -2,6 +2,7 @@
 package yukihane.ipum;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -11,7 +12,13 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.io.FilenameUtils;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.datatype.Artwork;
 import yukihane.ipum.gui.Status;
+import yukihane.ipum.nicovideo.NicoVideoInfo;
+import yukihane.ipum.nicovideo.NicoVideoInfoManager;
 import yukihane.swf.Cws2Fws;
 
 public class Converter implements Callable<File> {
@@ -109,7 +116,32 @@ public class Converter implements Callable<File> {
             } catch (InterruptedException ex) {
                 Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
             }
+
+            if (config.isUseID3()) {
+                createID3(outfile);
+            }
             return outfile;
+        }
+    }
+
+    private void createID3(File file) {
+        try {
+            NicoVideoInfoManager manager = NicoVideoInfoManager.getInstance();
+            NicoVideoInfo cont = manager.findNicoContent(file.getName());
+            AudioFile f = AudioFileIO.read(file);
+            Artwork artWork = new Artwork();
+            artWork.setImageUrl(cont.getThumbnailUrl().toString());
+            Tag tag = f.getTag();
+            tag.createAndSetArtworkField(artWork);
+            tag.setTitle(cont.getTitle());
+            tag.setComment(cont.getDescription());
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(cont.getFirstRetrieve());
+            tag.addYear(Integer.toString(cal.get(Calendar.YEAR)));
+            f.commit();
+        } catch (Exception e) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "ID3タグ作成に失敗: " + FilenameUtils.getName(file.
+                    toString()), e);
         }
     }
 }

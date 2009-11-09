@@ -1,6 +1,7 @@
 /** $Id$ */
 package yukihane.ipum.nicovideo;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -10,18 +11,17 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import nicobrowser.Config;
-import nicobrowser.NicoHttpClient;
 import nicobrowser.entity.NicoContent;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.io.FilenameUtils;
 
 public final class NicoVideoInfoManager {
 
+    private static final String MOVIE_THUMBNAIL_PAGE_HEADER = "http://www.nicovideo.jp/api/getthumbinfo/";
     private static final NicoVideoInfoManager instance = new NicoVideoInfoManager();
-    private final NicoHttpClient client;
     private final EntityManagerFactory factory;
 
     private NicoVideoInfoManager() {
-        client = NicoHttpClient.getInstance();
 
         Config config = Config.getInstance();
         HashMap<String, String> map = new HashMap<String, String>();
@@ -38,7 +38,7 @@ public final class NicoVideoInfoManager {
      * @param fileName ファイル名.
      * @return コンテンツ情報. 一致するものが無ければnull.
      */
-    public NicoContent findNicoContent(String fileName) {
+    public NicoVideoInfo findNicoContent(String fileName) {
         EntityManager manager = factory.createEntityManager();
 
         String baseName = FilenameUtils.getBaseName(fileName);
@@ -52,6 +52,30 @@ public final class NicoVideoInfoManager {
         if (results.isEmpty()) {
             return null;
         }
-        return results.get(results.size() - 1);
+        String movieNo = results.get(results.size() - 1).getNicoId();
+
+        URL url = null;
+        XMLConfiguration config = null;
+        try {
+            url = new URL(MOVIE_THUMBNAIL_PAGE_HEADER + movieNo);
+            config = new XMLConfiguration(url);
+            return new NicoVideoInfo(
+                    config.getString("thumb.video_id"),
+                    config.getString("thumb.title"),
+                    config.getString("thumb.description"),
+                    config.getString("thumb.thumbnail_url"),
+                    config.getString("thumb.first_retrieve"),
+                    config.getString("thumb.length"),
+                    config.getString("thumb.view_counter"),
+                    config.getString("thumb.comment_num"),
+                    config.getString("thumb.mylist_counter"),
+                    config.getString("thumb.last_res_body"),
+                    config.getString("thumb.watch_url"),
+                    config.getString("thumb.thumb_type"),
+                    config.getStringArray("thumb.tags.tag"));
+        } catch (Exception ex) {
+            Logger.getLogger(NicoVideoInfoManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 }
