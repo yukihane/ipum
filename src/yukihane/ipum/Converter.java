@@ -117,6 +117,11 @@ public class Converter implements Callable<File> {
             return null;
         }
 
+        // 今のところmp3でしか埋め込み出来ない
+        if (type.getDstFileType() == DstFileType.MP3 && config.isUseID3()) {
+            createID3(config, outfile);
+        }
+
         status.setState(Status.State.DONE);
         Event event = new Event(file, status);
         try {
@@ -125,10 +130,6 @@ public class Converter implements Callable<File> {
             Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        // 今のところmp3でしか埋め込み出来ない
-        if (type.getDstFileType() == DstFileType.MP3 && config.isUseID3()) {
-            createID3(config, outfile);
-        }
         return outfile;
     }
 
