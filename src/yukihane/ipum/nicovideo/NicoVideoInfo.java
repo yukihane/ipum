@@ -28,6 +28,7 @@ public class NicoVideoInfo {
     private final URL watchUrl;
     private final String thumbType;
     private final String[] tags;
+    private final String author;
 
     public String getVideoId() {
         return videoId;
@@ -81,6 +82,10 @@ public class NicoVideoInfo {
         return thumbnailUrl;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
     NicoVideoInfo(
             String videoId,
             String title,
@@ -94,7 +99,8 @@ public class NicoVideoInfo {
             String lastResBody,
             String watchUrl,
             String thumbType,
-            String[] tags) {
+            String[] tags,
+            String author) {
         try {
             this.videoId = videoId;
             this.title = title;
@@ -115,6 +121,7 @@ public class NicoVideoInfo {
             this.watchUrl = new URL(watchUrl);
             this.thumbType = thumbType;
             this.tags = tags;
+            this.author = author;
         } catch (Exception e) {
             throw new IllegalArgumentException("ビデオ情報取得に失敗", e);
         }

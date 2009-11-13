@@ -145,11 +145,14 @@ public class Converter implements Callable<File> {
             artWork.setImageUrl(cont.getThumbnailUrl().toString());
             tag.createAndSetArtworkField(artWork);
             tag.setTitle(cont.getTitle());
-            tag.setComment(cont.getDescription());
+            tag.setComment(cont.getVideoId() + "; " + cont.getDescription());
             Calendar cal = Calendar.getInstance();
             cal.setTime(cont.getFirstRetrieve());
             tag.addYear(Integer.toString(cal.get(Calendar.YEAR)));
             tag.setGenre("ニコニコ動画");
+            if (cont.getAuthor() != null) {
+                tag.setArtist(cont.getAuthor());
+            }
             f.commit();
         } catch (Exception e) {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "ID3タグ作成に失敗: " + FilenameUtils.getName(file.

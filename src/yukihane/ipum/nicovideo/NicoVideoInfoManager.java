@@ -52,12 +52,12 @@ public final class NicoVideoInfoManager {
         if (results.isEmpty()) {
             return null;
         }
-        String movieNo = results.get(results.size() - 1).getNicoId();
+        final NicoContent content = results.get(results.size() - 1);
 
         URL url = null;
         XMLConfiguration config = null;
         try {
-            url = new URL(MOVIE_THUMBNAIL_PAGE_HEADER + movieNo);
+            url = new URL(MOVIE_THUMBNAIL_PAGE_HEADER + content.getNicoId());
             config = new XMLConfiguration(url);
             return new NicoVideoInfo(
                     config.getString("thumb.video_id"),
@@ -72,7 +72,8 @@ public final class NicoVideoInfoManager {
                     config.getString("thumb.last_res_body"),
                     config.getString("thumb.watch_url"),
                     config.getString("thumb.thumb_type"),
-                    config.getStringArray("thumb.tags.tag"));
+                    config.getStringArray("thumb.tags.tag"),
+                    content.getAuthor());
         } catch (Exception ex) {
             Logger.getLogger(NicoVideoInfoManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
