@@ -12,10 +12,12 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -35,10 +37,13 @@ public class MainWindow extends javax.swing.JFrame {
     private final MyTableModel model = new MyTableModel();
     private final Controller controller;
     private final Thread controllerThread;
+    private final DataFlavor uriFlavor;
 
     /** Creates new form MainWindow */
-    public MainWindow() {
+    public MainWindow() throws ClassNotFoundException {
         initComponents();
+
+        uriFlavor = new DataFlavor("text/uri-list;class=java.lang.String");
 
         Config config = Config.getInstance();
         controller = new Controller(config.getThreadNum()) {
@@ -72,7 +77,7 @@ public class MainWindow extends javax.swing.JFrame {
 
             @Override
             public void dragOver(DropTargetDragEvent dtde) {
-                if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor) || dtde.isDataFlavorSupported(uriFlavor)) {
                     dtde.acceptDrag(DnDConstants.ACTION_COPY);
                     return;
                 }
@@ -81,18 +86,31 @@ public class MainWindow extends javax.swing.JFrame {
 
             public void drop(DropTargetDropEvent dtde) {
                 try {
+                    List<File> list = new ArrayList<File>();
                     if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                         dtde.acceptDrop(DnDConstants.ACTION_COPY);
                         Transferable transferable = dtde.getTransferable();
-                        List list = (List) transferable.getTransferData(DataFlavor.javaFileListFlavor);
-                        for (Object o : list) {
-                            if (o instanceof File) {
-                                File file = (File) o;
-                                if (file.isFile()) {
-                                    model.addItem(new Item(file));
-                                    controller.addTask(Config.getInstance(), file);
+                        list = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
+                    } else if (dtde.isDataFlavorSupported(uriFlavor)) {
+                        dtde.acceptDrop(DnDConstants.ACTION_COPY);
+                        String str = (String) dtde.getTransferable().getTransferData(uriFlavor);
+                        StringTokenizer st = new StringTokenizer(str, "¥r¥n");
+
+                        java.net.URI uri;
+                        while (st.hasMoreElements()) {
+                            try {
+                                uri = new java.net.URI((String) st.nextElement());
+                                if (uri.getScheme().equals("file")) {
+                                    list.add(new File(uri.getPath()));
                                 }
+                            } catch (java.net.URISyntaxException ex) {
                             }
+                        }
+                    }
+                    for (File file : list) {
+                        if (file.isFile()) {
+                            model.addItem(new Item(file));
+                            controller.addTask(Config.getInstance(), file);
                         }
                     }
                 } catch (IOException ex) {
@@ -161,9 +179,15 @@ public class MainWindow extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {
-                JFrame frame = new MainWindow();
-                frame.setLocationByPlatform(true);
-                frame.setVisible(true);
+                JFrame frame;
+                try {
+                    frame = new MainWindow();
+                    frame.setLocationByPlatform(true);
+                    frame.setVisible(true);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    System.exit(-1);
+                }
             }
         });
     }
