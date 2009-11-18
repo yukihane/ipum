@@ -142,7 +142,7 @@ public class MainWindow extends javax.swing.JFrame {
         mainTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("ipum - music picker ver.0.3");
+        setTitle("ipum - music picker ver.0.4");
 
         propertyButton.setText("Property");
         propertyButton.setEnabled(false);
