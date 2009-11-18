@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.lang.SystemUtils;
 
 /**
  *
@@ -84,8 +85,16 @@ public class Config {
 //        }
 //    }
     private void initializeProperties() throws ConfigurationException {
-        properties.addProperty("path.ffmpeg", new File("lib", "ffmpeg.exe").toString());
-        properties.addProperty("path.mp4box", new File("lib", "MP4Box.exe").toString());
+        if (SystemUtils.IS_OS_WINDOWS) {
+            properties.addProperty("path.ffmpeg", new File("bin/win", "ffmpeg.exe").toString());
+            properties.addProperty("path.mp4box", new File("bin/win", "MP4Box.exe").toString());
+        } else if (SystemUtils.IS_OS_MAC) {
+            properties.addProperty("path.ffmpeg", new File("bin/mac", "ffmpeg").toString());
+            properties.addProperty("path.mp4box", new File("bin/mac", "MP4Box").toString());
+        } else {
+            properties.addProperty("path.ffmpeg", new File("bin/linux", "ffmpeg").toString());
+            properties.addProperty("path.mp4box", new File("bin/linux", "MP4Box").toString());
+        }
         properties.addProperty("path.output", new File("output").toString());
         properties.addProperty("path.temp", new File("temp").toString());
         properties.addProperty("ffmpeg.threadnum", 1);
