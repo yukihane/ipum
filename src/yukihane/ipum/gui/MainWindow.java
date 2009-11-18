@@ -88,29 +88,31 @@ public class MainWindow extends javax.swing.JFrame {
                 try {
                     List<File> list = new ArrayList<File>();
                     if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                        // Windows(Macも？)の場合
                         dtde.acceptDrop(DnDConstants.ACTION_COPY);
                         Transferable transferable = dtde.getTransferable();
                         list = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
                     } else if (dtde.isDataFlavorSupported(uriFlavor)) {
+                        // Linuxの場合
                         dtde.acceptDrop(DnDConstants.ACTION_COPY);
                         String str = (String) dtde.getTransferable().getTransferData(uriFlavor);
-                        StringTokenizer st = new StringTokenizer(str, "¥r¥n");
+                        StringTokenizer st = new StringTokenizer(str);
 
                         java.net.URI uri;
-                        while (st.hasMoreElements()) {
+                        while (st.hasMoreTokens()) {
                             try {
-                                uri = new java.net.URI((String) st.nextElement());
+                                uri = new java.net.URI(st.nextToken());
                                 if (uri.getScheme().equals("file")) {
                                     list.add(new File(uri.getPath()));
                                 }
                             } catch (java.net.URISyntaxException ex) {
+                                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
                     }
                     for (File file : list) {
                         if (file.isFile()) {
-                            model.addItem(new Item(file));
-                            controller.addTask(Config.getInstance(), file);
+                            System.out.println(file.toString());
                         }
                     }
                 } catch (IOException ex) {
