@@ -112,7 +112,8 @@ public class MainWindow extends javax.swing.JFrame {
                     }
                     for (File file : list) {
                         if (file.isFile()) {
-                            System.out.println(file.toString());
+                            model.addItem(new Item(file));
+                            controller.addTask(Config.getInstance(), file);
                         }
                     }
                 } catch (IOException ex) {
