@@ -55,6 +55,13 @@ public class Config {
         return properties.getBoolean("convertopt.useid3");
     }
 
+    /**
+     * タイトルをアルバム名として設定するか.
+     */
+    boolean useTitleAsAlbum() {
+        return properties.getBoolean("convertopt.use_title_as_album", false);
+    }
+
     {
         final File appDir = new File(System.getProperty("user.home", "."), "." + APPLICATION_NAME).getAbsoluteFile();
         final File config = new File(appDir, CONFIG_NAME);
@@ -100,6 +107,7 @@ public class Config {
         properties.addProperty("path.temp", new File("temp").toString());
         properties.addProperty("ffmpeg.threadnum", 1);
         properties.addProperty("convertopt.useid3", false);
+        properties.addProperty("convertopt.use_title_as_album", false);
         properties.save();
     }
 }

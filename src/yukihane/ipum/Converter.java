@@ -155,6 +155,9 @@ public class Converter implements Callable<File> {
             if (cont.getAuthor() != null) {
                 tag.addField(FieldKey.ARTIST, cont.getAuthor());
             }
+            if (config.useTitleAsAlbum()) {
+                tag.addField(FieldKey.ALBUM, cont.getTitle());
+            }
             f.commit();
         } catch (Exception e) {
             log.error("ID3タグ作成に失敗: " + FilenameUtils.getName(file.toString()), e);
