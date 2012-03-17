@@ -2,19 +2,16 @@
 package yukihane.ipum.nicovideo;
 
 import com.sun.syndication.io.impl.DateParser;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NicoVideoInfo {
 
+    private static Logger log = LoggerFactory.getLogger(NicoVideoInfo.class);
     private final String videoId;
     private final String title;
     private final String description;
@@ -148,7 +145,7 @@ public class NicoVideoInfo {
                 os.write(buf, 0, len);
             }
         } catch (IOException ex) {
-            Logger.getLogger(NicoVideoInfo.class.getName()).log(Level.SEVERE, null, ex);
+            log.error("", ex);
             tmpFile = null;
         } finally {
             if (is != null) {

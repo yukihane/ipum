@@ -7,14 +7,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.InflaterInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Cws2Fws {
 
     private static final String CWS = "CWS";
     private static final String FWS = "FWS";
+    private static Logger log = LoggerFactory.getLogger(Cws2Fws.class);
 
     /**
      * 圧縮SWFかどうか判定する.
@@ -31,13 +32,13 @@ public class Cws2Fws {
                 return true;
             }
         } catch (IOException ex) {
-            Logger.getLogger(Cws2Fws.class.getName()).log(Level.SEVERE, null, ex);
+            log.error("", ex);
         } finally {
             if (bis != null) {
                 try {
                     bis.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(Cws2Fws.class.getName()).log(Level.SEVERE, null, ex);
+                    log.error("", ex);
                 }
             }
         }
@@ -75,20 +76,20 @@ public class Cws2Fws {
             }
             return out;
         } catch (IOException ex) {
-            Logger.getLogger(Cws2Fws.class.getName()).log(Level.SEVERE, null, ex);
+            log.error("", ex);
         } finally {
             if (bis != null) {
                 try {
                     bis.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(Cws2Fws.class.getName()).log(Level.SEVERE, null, ex);
+                    log.error("", ex);
                 }
             }
             if (bos != null) {
                 try {
                     bos.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(Cws2Fws.class.getName()).log(Level.SEVERE, null, ex);
+                    log.error("", ex);
                 }
             }
         }

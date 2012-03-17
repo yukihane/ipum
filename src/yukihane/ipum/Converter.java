@@ -6,8 +6,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.Executor;
@@ -17,6 +15,8 @@ import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.datatype.Artwork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import yukihane.ipum.gui.Status;
 import yukihane.ipum.nicovideo.NicoVideoInfo;
 import yukihane.ipum.nicovideo.NicoVideoInfoManager;
@@ -24,6 +24,7 @@ import yukihane.swf.Cws2Fws;
 
 public class Converter implements Callable<File> {
 
+    private static Logger log = LoggerFactory.getLogger(Converter.class);
     private final LinkedBlockingQueue<Event> queue;
     private final Config config;
     private final File file;
@@ -40,7 +41,7 @@ public class Converter implements Callable<File> {
         try {
             queue.put(new Event(this.file, status));
         } catch (InterruptedException ex) {
-            Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
+            log.error("キューイングキャンセル", ex);
         }
 
         int res = -1;
@@ -52,7 +53,7 @@ public class Converter implements Callable<File> {
             try {
                 queue.put(event);
             } catch (InterruptedException ex) {
-                Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
+                log.error("キューイングキャンセル", ex);
             }
             return null;
         }
@@ -99,7 +100,7 @@ public class Converter implements Callable<File> {
                 outfile = realOutFile;
             }
         } catch (Exception ex) {
-            Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
+            log.error("変換エラー", ex);
         } finally {
             if (tmpFile != null && tmpFile.exists()) {
                 tmpFile.delete();
@@ -113,7 +114,7 @@ public class Converter implements Callable<File> {
             try {
                 queue.put(event);
             } catch (InterruptedException ex) {
-                Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
+                log.error("キューイングキャンセル", ex);
             }
             return null;
         }
@@ -127,7 +128,7 @@ public class Converter implements Callable<File> {
         try {
             queue.put(event);
         } catch (InterruptedException ex) {
-            Logger.getLogger(Converter.class.getName()).log(Level.SEVERE, null, ex);
+            log.error("キューイングキャンセル", ex);
         }
 
         return outfile;
@@ -156,8 +157,7 @@ public class Converter implements Callable<File> {
             }
             f.commit();
         } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "ID3タグ作成に失敗: " + FilenameUtils.getName(file.
-                    toString()), e);
+            log.error("ID3タグ作成に失敗: " + FilenameUtils.getName(file.toString()), e);
         } finally {
             if (artWorkFile != null) {
                 artWorkFile.delete();

@@ -4,12 +4,7 @@ package yukihane.ipum.gui;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetAdapter;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetListener;
+import java.awt.dnd.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -17,13 +12,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.TableColumn;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import yukihane.ipum.Config;
 import yukihane.ipum.Event;
 import yukihane.ipum.gui.MyTableModel.StatusCellRenderer;
@@ -34,6 +28,7 @@ import yukihane.ipum.gui.MyTableModel.StatusCellRenderer;
  */
 public class MainWindow extends javax.swing.JFrame {
 
+    private static Logger log = LoggerFactory.getLogger(MainWindow.class);
     private final MyTableModel model = new MyTableModel();
     private final Controller controller;
     private final Thread controllerThread;
@@ -106,7 +101,7 @@ public class MainWindow extends javax.swing.JFrame {
                                     list.add(new File(uri.getPath()));
                                 }
                             } catch (java.net.URISyntaxException ex) {
-                                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                                log.error("URL誤り", ex);
                             }
                         }
                     }
@@ -117,9 +112,9 @@ public class MainWindow extends javax.swing.JFrame {
                         }
                     }
                 } catch (IOException ex) {
-                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    log.error("", ex);
                 } catch (UnsupportedFlavorException ex) {
-                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    log.error("", ex);
                 }
             }
         };
@@ -188,7 +183,7 @@ public class MainWindow extends javax.swing.JFrame {
                     frame.setLocationByPlatform(true);
                     frame.setVisible(true);
                 } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    log.error("", ex);
                     System.exit(-1);
                 }
             }
@@ -207,12 +202,10 @@ public class MainWindow extends javax.swing.JFrame {
             }
         }
         try {
-            Logger.getLogger(MainWindow.class.getName()).
-                    log(Level.FINEST, lafClassName);
+            log.debug(lafClassName);
             UIManager.setLookAndFeel(lafClassName);
         } catch (Exception ex) {
-            Logger.getLogger(MainWindow.class.getName()).
-                    log(Level.SEVERE, null, ex);
+            log.error("", ex);
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

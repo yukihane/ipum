@@ -2,11 +2,11 @@
 package yukihane.ipum;
 
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.lang.SystemUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -16,6 +16,7 @@ public class Config {
 
     private final static String APPLICATION_NAME = "ipum";
     private final static String CONFIG_NAME = APPLICATION_NAME + ".xml";
+    private static Logger log = LoggerFactory.getLogger(Config.class);
     private static Config instance = new Config();
     private static XMLConfiguration properties;
 
@@ -66,7 +67,7 @@ public class Config {
             }
             properties.load();
         } catch (ConfigurationException ex) {
-            Logger.getLogger(Config.class.getName()).log(Level.SEVERE, null, ex);
+            log.error("コンフィグ読み込み失敗", ex);
         }
     }
 

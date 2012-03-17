@@ -4,8 +4,6 @@ package yukihane.ipum.nicovideo;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -14,11 +12,14 @@ import nicobrowser.config.Config;
 import nicobrowser.entity.NicoContent;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class NicoVideoInfoManager {
 
     private static final String MOVIE_THUMBNAIL_PAGE_HEADER = "http://www.nicovideo.jp/api/getthumbinfo/";
     private static final NicoVideoInfoManager instance = new NicoVideoInfoManager();
+    private static Logger log = LoggerFactory.getLogger(NicoVideoInfoManager.class);
     private final EntityManagerFactory factory;
 
     private NicoVideoInfoManager() {
@@ -46,7 +47,7 @@ public final class NicoVideoInfoManager {
                 setParameter(1, baseName);
         List<NicoContent> results = query.getResultList();
         if (results.size() > 1) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, "同一ファイル名のファイルが複数ありました");
+            log.warn("同一ファイル名のファイルが複数ありました");
         }
 
         if (results.isEmpty()) {
@@ -75,7 +76,7 @@ public final class NicoVideoInfoManager {
                     config.getStringArray("thumb.tags.tag"),
                     content.getAuthor());
         } catch (Exception ex) {
-            Logger.getLogger(NicoVideoInfoManager.class.getName()).log(Level.SEVERE, null, ex);
+            log.error("", ex);
             return null;
         }
     }
