@@ -14,6 +14,7 @@ import org.apache.commons.exec.Executor;
 import org.apache.commons.io.FilenameUtils;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.datatype.Artwork;
 import yukihane.ipum.gui.Status;
@@ -143,15 +144,15 @@ public class Converter implements Callable<File> {
             artWorkFile = cont.getArtWork(config.getTempDir());
             Artwork artWork = Artwork.createArtworkFromFile(artWorkFile);
             artWork.setImageUrl(cont.getThumbnailUrl().toString());
-            tag.createAndSetArtworkField(artWork);
-            tag.setTitle(cont.getTitle());
-            tag.setComment(cont.getVideoId() + "; " + cont.getDescription());
+            tag.addField(artWork);
+            tag.addField(FieldKey.TITLE, cont.getTitle());
+            tag.addField(FieldKey.COMMENT, cont.getVideoId() + "; " + cont.getDescription());
             Calendar cal = Calendar.getInstance();
             cal.setTime(cont.getFirstRetrieve());
-            tag.addYear(Integer.toString(cal.get(Calendar.YEAR)));
-            tag.setGenre("ニコニコ動画");
+            tag.addField(FieldKey.YEAR, Integer.toString(cal.get(Calendar.YEAR)));
+            tag.addField(FieldKey.GENRE, "ニコニコ動画");
             if (cont.getAuthor() != null) {
-                tag.setArtist(cont.getAuthor());
+                tag.addField(FieldKey.ARTIST, cont.getAuthor());
             }
             f.commit();
         } catch (Exception e) {
