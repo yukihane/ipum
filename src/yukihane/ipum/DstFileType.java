@@ -23,4 +23,14 @@ public enum DstFileType {
     public String toString() {
         return getExtension();
     }
+
+    static DstFileType from(String str) {
+        final String ext = str.toLowerCase();
+        if ("aac".equals(ext)) {
+            return AAC;
+        } else if ("mp3".equals(ext)) {
+            return MP3;
+        }
+        return null;
+    }
 }
