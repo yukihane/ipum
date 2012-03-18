@@ -6,12 +6,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import yukihane.ipum.Config;
 import yukihane.ipum.Converter;
 import yukihane.ipum.Event;
 
 public abstract class Controller implements Runnable {
 
+    private static Logger log = LoggerFactory.getLogger(Controller.class);
     private final ExecutorService executors;
     private final LinkedBlockingQueue<Event> queue = new LinkedBlockingQueue<Event>();
     private volatile boolean stop;
@@ -37,7 +40,7 @@ public abstract class Controller implements Runnable {
                 }
                 notifyEvent(this.queue.take());
             } catch (InterruptedException ex) {
-                System.out.println("終了要求");
+                log.info("終了要求");
             }
         }
     }

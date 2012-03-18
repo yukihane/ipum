@@ -85,7 +85,7 @@ public class Converter implements Callable<File> {
             }
             params.put("outfile", outfile.toString());
             commandLine.setSubstitutionMap(params);
-            System.out.println(commandLine);
+            log.info("COMMSND: " + commandLine);
 
             Executor executor = new DefaultExecutor();
             res = executor.execute(commandLine);
@@ -94,7 +94,7 @@ public class Converter implements Callable<File> {
                 File realOutFile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + ".m4a");
                 CommandLine mp4box = CommandLine.parse(config.getMp4boxPath().toString());
                 mp4box.addArguments(new String[]{"-add", outfile.toString(), realOutFile.toString()});
-                System.out.println(mp4box);
+                log.info("MP4BOX: " + mp4box);
                 res = new DefaultExecutor().execute(mp4box);
                 outfile.delete();
                 outfile = realOutFile;
