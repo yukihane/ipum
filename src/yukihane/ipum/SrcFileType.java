@@ -3,29 +3,10 @@ package yukihane.ipum;
 
 import java.io.File;
 import org.apache.commons.io.FilenameUtils;
-import static yukihane.ipum.DstFileType.*;
 
 public enum SrcFileType {
 
-    FLV {
-
-        @Override
-        public DstFileType getDstFileType() {
-            return MP3;
-        }
-    }, MP4 {
-
-        @Override
-        public DstFileType getDstFileType() {
-            return AAC;
-        }
-    }, SWF {
-
-        @Override
-        public DstFileType getDstFileType() {
-            return MP3;
-        }
-    };
+    FLV, MP4, SWF;
 
     static SrcFileType fromFileExt(File file) {
         String ext = FilenameUtils.getExtension(file.toString()).toLowerCase();
@@ -38,6 +19,4 @@ public enum SrcFileType {
         }
         return null;
     }
-
-    public abstract DstFileType getDstFileType();
 }

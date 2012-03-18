@@ -64,12 +64,13 @@ public class Converter implements Callable<File> {
 
         File outfile = null;
         try {
-            if (type.getDstFileType() == DstFileType.AAC) {
+            final DstFileType dstType = getDstType(file);
+            if (dstType == DstFileType.AAC) {
                 outfile = File.createTempFile("tmp", "." + DstFileType.AAC.getExtension(), config.getTempDir());
                 outfile.deleteOnExit();
             } else {
-                outfile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + "." + type.
-                        getDstFileType().getExtension());
+                outfile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + "." + dstType.
+                        getExtension());
             }
 
             HashMap<String, String> params = new HashMap<String, String>();
@@ -90,7 +91,7 @@ public class Converter implements Callable<File> {
             Executor executor = new DefaultExecutor();
             res = executor.execute(commandLine);
 
-            if (res == 0 && type.getDstFileType() == DstFileType.AAC) {
+            if (res == 0 && dstType == DstFileType.AAC) {
                 File realOutFile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + ".m4a");
                 CommandLine mp4box = CommandLine.parse(config.getMp4boxPath().toString());
                 mp4box.addArguments(new String[]{"-new", "-add", outfile.toString(), realOutFile.toString()});
@@ -166,5 +167,9 @@ public class Converter implements Callable<File> {
                 artWorkFile.delete();
             }
         }
+    }
+
+    private DstFileType getDstType(File file) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }
