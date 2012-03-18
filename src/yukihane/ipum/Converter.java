@@ -59,7 +59,7 @@ public class Converter implements Callable<File> {
         }
 
         CommandLine commandLine = CommandLine.parse(config.getFfmpegPath().toString());
-        String[] defArgs = new String[]{"-y", "-acodec", "${acodec}", "-i", "${infile}", "${outfile}"};
+        String[] defArgs = {"-y", "-acodec", "${acodec}", "-i", "${infile}", "${outfile}"};
         commandLine.addArguments(defArgs);
 
         File outfile = null;
@@ -86,7 +86,7 @@ public class Converter implements Callable<File> {
             }
             params.put("outfile", outfile.toString());
             commandLine.setSubstitutionMap(params);
-            log.info("COMMSND: " + commandLine);
+            log.info("COMMAND: " + commandLine);
 
             Executor executor = new DefaultExecutor();
             res = executor.execute(commandLine);
