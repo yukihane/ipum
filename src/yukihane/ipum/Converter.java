@@ -1,11 +1,13 @@
 /* $Id$ */
 package yukihane.ipum;
 
-import java.io.File;
+import java.io.*;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.Executor;
@@ -169,7 +171,24 @@ public class Converter implements Callable<File> {
         }
     }
 
-    private DstFileType getDstType(File file) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    private DstFileType getDstType(File file) throws IOException {
+
+        final String args[] = {config.getFfmpegPath().toString(), "-i", file.toString()};
+        final Process process = Runtime.getRuntime().exec(args);
+        final InputStream es = process.getErrorStream();
+        final BufferedReader isr = new BufferedReader(new InputStreamReader(es));
+
+        final Pattern pattern = Pattern.compile("Stream #.*?: Audio: (.*?),");
+        String line;
+        while ((line = isr.readLine()) != null) {
+            final Matcher matcher = pattern.matcher(line);
+            if (matcher.find()) {
+                final String type = matcher.group(1);
+                return DstFileType.from(type);
+            }
+        }
+
+        log.warn("出力タイプ不明のためMP3と推定します: " + file);
+        return DstFileType.MP3;
     }
 }
