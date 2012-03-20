@@ -66,16 +66,17 @@ public class Converter implements Callable<File> {
         File tmpInFile = null;
         File tmpOutFile = null;
         try {
-            final DstFileType dstType = getDstType(file);
+            tmpInFile = File.createTempFile("tmp", "." + FilenameUtils.getExtension(file.toString()),
+                    config.getTempDir());
+            FileUtils.copyFile(file, tmpInFile);
+
+            final DstFileType dstType = getDstType(tmpInFile);
             tmpOutFile = File.createTempFile("tmp", "." + dstType.getExtension(), config.getTempDir());
 
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("acodec", "copy");
-            tmpInFile = File.createTempFile("tmp", "." + FilenameUtils.getExtension(file.toString()), config.getTempDir());
             if (type == SrcFileType.SWF && Cws2Fws.isCws(file)) {
                 Cws2Fws.createFws(file, tmpInFile);
-            } else {
-                FileUtils.copyFile(file, tmpInFile);
             }
             params.put("infile", tmpInFile.toString());
 
