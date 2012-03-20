@@ -43,7 +43,7 @@ public class Converter implements Callable<File> {
         try {
             queue.put(new Event(this.file, status));
         } catch (InterruptedException ex) {
-            log.error("キューイングキャンセル", ex);
+            log.error("キューイング失敗", ex);
         }
 
         int res = -1;
@@ -55,7 +55,7 @@ public class Converter implements Callable<File> {
             try {
                 queue.put(event);
             } catch (InterruptedException ex) {
-                log.error("キューイングキャンセル", ex);
+                log.error("キューイング失敗", ex);
             }
             return null;
         }
@@ -117,7 +117,7 @@ public class Converter implements Callable<File> {
             try {
                 queue.put(event);
             } catch (InterruptedException ex) {
-                log.error("キューイングキャンセル", ex);
+                log.error("キューイング失敗", ex);
             }
             return null;
         }
@@ -131,7 +131,7 @@ public class Converter implements Callable<File> {
         try {
             queue.put(event);
         } catch (InterruptedException ex) {
-            log.error("キューイングキャンセル", ex);
+            log.error("キューイング失敗", ex);
         }
 
         return outfile;
