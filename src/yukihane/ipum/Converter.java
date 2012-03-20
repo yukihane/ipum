@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.Executor;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -77,15 +78,14 @@ public class Converter implements Callable<File> {
 
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("acodec", "copy");
+            tmpFile = File.createTempFile("tmp", "." + FilenameUtils.getExtension(file.toString()), config.getTempDir());
             if (type == SrcFileType.SWF && Cws2Fws.isCws(file)) {
-                tmpFile = File.createTempFile("tmp", "." + FilenameUtils.getExtension(file.toString()), config.
-                        getTempDir());
-                tmpFile.deleteOnExit();
                 Cws2Fws.createFws(file, tmpFile);
-                params.put("infile", tmpFile.toString());
             } else {
-                params.put("infile", file.toString());
+                FileUtils.copyFile(file, tmpFile);
             }
+            params.put("infile", tmpFile.toString());
+
             params.put("outfile", outfile.toString());
             commandLine.setSubstitutionMap(params);
             log.info("COMMAND: " + commandLine);
