@@ -91,9 +91,9 @@ public class Converter implements Callable<File> {
             log.info("COMMAND: " + commandLine);
 
             Executor executor = new DefaultExecutor();
-            res = executor.execute(commandLine);
+            executor.execute(commandLine);
 
-            if (res == 0 && dstType == DstFileType.AAC) {
+            if (dstType == DstFileType.AAC) {
                 File realOutFile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + ".m4a");
                 CommandLine mp4box = CommandLine.parse(config.getMp4boxPath().toString());
                 mp4box.addArguments(new String[]{"-new", "-add", outTmpFile.toString(), realOutFile.toString()});
