@@ -48,7 +48,7 @@ public class Converter implements Callable<File> {
         }
 
         int res = -1;
-        File tmpFile = null;
+        File tmpInFile = null;
         final SrcFileType type = SrcFileType.fromFileExt(file);
         if (type == null) {
             status.setState(Status.State.FAIL);
@@ -78,13 +78,13 @@ public class Converter implements Callable<File> {
 
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("acodec", "copy");
-            tmpFile = File.createTempFile("tmp", "." + FilenameUtils.getExtension(file.toString()), config.getTempDir());
+            tmpInFile = File.createTempFile("tmp", "." + FilenameUtils.getExtension(file.toString()), config.getTempDir());
             if (type == SrcFileType.SWF && Cws2Fws.isCws(file)) {
-                Cws2Fws.createFws(file, tmpFile);
+                Cws2Fws.createFws(file, tmpInFile);
             } else {
-                FileUtils.copyFile(file, tmpFile);
+                FileUtils.copyFile(file, tmpInFile);
             }
-            params.put("infile", tmpFile.toString());
+            params.put("infile", tmpInFile.toString());
 
             params.put("outfile", outfile.toString());
             commandLine.setSubstitutionMap(params);
@@ -105,8 +105,8 @@ public class Converter implements Callable<File> {
         } catch (Exception ex) {
             log.error("変換エラー", ex);
         } finally {
-            if (tmpFile != null && tmpFile.exists()) {
-                tmpFile.delete();
+            if (tmpInFile != null && tmpInFile.exists()) {
+                tmpInFile.delete();
             }
         }
 
