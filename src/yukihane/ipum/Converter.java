@@ -116,6 +116,15 @@ public class Converter implements Callable<File> {
 
             return outFile;
         } catch (Exception ex) {
+            status = new Status();
+            status.setState(Status.State.FAIL);
+            Event event = new Event(file, status);
+            try {
+                queue.put(event);
+            } catch (InterruptedException ex2) {
+                log.error("キューイング失敗", ex2);
+            }
+
             log.error("変換エラー", ex);
             throw new IOException(ex);
         } finally {
