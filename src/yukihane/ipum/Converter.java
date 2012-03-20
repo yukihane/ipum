@@ -97,7 +97,7 @@ public class Converter implements Callable<File> {
             }
 
             if (config.isUseID3()) {
-                createID3(config, tmpOutFile);
+                createID3(config, file.getName(), tmpOutFile);
             }
 
             status = new Status();
@@ -131,7 +131,7 @@ public class Converter implements Callable<File> {
         File artWorkFile = null;
         try {
             NicoVideoInfoManager manager = NicoVideoInfoManager.getInstance();
-            NicoVideoInfo cont = manager.findNicoContent(file.getName());
+            NicoVideoInfo cont = manager.findNicoContent(originalFileName);
             AudioFile f = AudioFileIO.read(file);
             Tag tag = f.getTag();
 
