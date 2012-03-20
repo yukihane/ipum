@@ -65,14 +65,14 @@ public class Converter implements Callable<File> {
         String[] defArgs = {"-y", "-acodec", "${acodec}", "-i", "${infile}", "${outfile}"};
         commandLine.addArguments(defArgs);
 
-        File outfile = null;
+        File outTmpFile = null;
         try {
             final DstFileType dstType = getDstType(file);
             if (dstType == DstFileType.AAC) {
-                outfile = File.createTempFile("tmp", "." + DstFileType.AAC.getExtension(), config.getTempDir());
-                outfile.deleteOnExit();
+                outTmpFile = File.createTempFile("tmp", "." + DstFileType.AAC.getExtension(), config.getTempDir());
+                outTmpFile.deleteOnExit();
             } else {
-                outfile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + "." + dstType.
+                outTmpFile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + "." + dstType.
                         getExtension());
             }
 
@@ -86,7 +86,7 @@ public class Converter implements Callable<File> {
             }
             params.put("infile", tmpInFile.toString());
 
-            params.put("outfile", outfile.toString());
+            params.put("outfile", outTmpFile.toString());
             commandLine.setSubstitutionMap(params);
             log.info("COMMAND: " + commandLine);
 
@@ -96,11 +96,11 @@ public class Converter implements Callable<File> {
             if (res == 0 && dstType == DstFileType.AAC) {
                 File realOutFile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + ".m4a");
                 CommandLine mp4box = CommandLine.parse(config.getMp4boxPath().toString());
-                mp4box.addArguments(new String[]{"-new", "-add", outfile.toString(), realOutFile.toString()});
+                mp4box.addArguments(new String[]{"-new", "-add", outTmpFile.toString(), realOutFile.toString()});
                 log.info("MP4BOX: " + mp4box);
                 res = new DefaultExecutor().execute(mp4box);
-                outfile.delete();
-                outfile = realOutFile;
+                outTmpFile.delete();
+                outTmpFile = realOutFile;
             }
         } catch (Exception ex) {
             log.error("変換エラー", ex);
@@ -123,7 +123,7 @@ public class Converter implements Callable<File> {
         }
 
         if (config.isUseID3()) {
-            createID3(config, outfile);
+            createID3(config, outTmpFile);
         }
 
         status.setState(Status.State.DONE);
@@ -134,7 +134,7 @@ public class Converter implements Callable<File> {
             log.error("キューイング失敗", ex);
         }
 
-        return outfile;
+        return outTmpFile;
     }
 
     private void createID3(Config config, File file) throws IOException {
