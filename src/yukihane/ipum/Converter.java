@@ -37,7 +37,7 @@ public class Converter implements Callable<File> {
         this.file = file;
     }
 
-    public File call() {
+    public File call() throws Exception {
         Status status = new Status();
         status.setState(Status.State.CONVERTING);
         try {
@@ -137,7 +137,7 @@ public class Converter implements Callable<File> {
         return outfile;
     }
 
-    private void createID3(Config config, File file) {
+    private void createID3(Config config, File file) throws IOException {
         File artWorkFile = null;
         try {
             NicoVideoInfoManager manager = NicoVideoInfoManager.getInstance();
@@ -164,6 +164,7 @@ public class Converter implements Callable<File> {
             f.commit();
         } catch (Exception e) {
             log.error("ID3タグ作成に失敗: " + FilenameUtils.getName(file.toString()), e);
+            throw new IOException(e);
         } finally {
             if (artWorkFile != null) {
                 artWorkFile.delete();
