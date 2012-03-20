@@ -47,7 +47,6 @@ public class Converter implements Callable<File> {
             log.error("キューイング失敗", ex);
         }
 
-        int res = -1;
         final SrcFileType type = SrcFileType.fromFileExt(file);
         if (type == null) {
             status.setState(Status.State.FAIL);
@@ -68,13 +67,7 @@ public class Converter implements Callable<File> {
         File tmpOutFile = null;
         try {
             final DstFileType dstType = getDstType(file);
-            if (dstType == DstFileType.AAC) {
-                tmpOutFile = File.createTempFile("tmp", "." + DstFileType.AAC.getExtension(), config.getTempDir());
-                tmpOutFile.deleteOnExit();
-            } else {
-                tmpOutFile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + "." + dstType.
-                        getExtension());
-            }
+            tmpOutFile = File.createTempFile("tmp", "." + dstType.getExtension(), config.getTempDir());
 
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("acodec", "copy");
@@ -94,50 +87,47 @@ public class Converter implements Callable<File> {
             executor.execute(commandLine);
 
             if (dstType == DstFileType.AAC) {
-                File realOutFile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + ".m4a");
+                final File tmp = File.createTempFile("tmp", ".m4a", config.getTempDir());
                 CommandLine mp4box = CommandLine.parse(config.getMp4boxPath().toString());
-                mp4box.addArguments(new String[]{"-new", "-add", tmpOutFile.toString(), realOutFile.toString()});
+                mp4box.addArguments(new String[]{"-new", "-add", tmpOutFile.toString(), tmp.toString()});
                 log.info("MP4BOX: " + mp4box);
-                res = new DefaultExecutor().execute(mp4box);
+                new DefaultExecutor().execute(mp4box);
                 tmpOutFile.delete();
-                tmpOutFile = realOutFile;
+                tmpOutFile = tmp;
             }
-        } catch (Exception ex) {
-            log.error("変換エラー", ex);
-        } finally {
-            if (tmpInFile != null && tmpInFile.exists()) {
-                tmpInFile.delete();
-            }
-        }
 
-        status = new Status();
-        if (res != 0) {
-            status.setState(Status.State.FAIL);
+            if (config.isUseID3()) {
+                createID3(config, tmpOutFile);
+            }
+
+            status = new Status();
+            status.setState(Status.State.DONE);
             Event event = new Event(file, status);
             try {
                 queue.put(event);
             } catch (InterruptedException ex) {
                 log.error("キューイング失敗", ex);
             }
-            return null;
-        }
 
-        if (config.isUseID3()) {
-            createID3(config, tmpOutFile);
-        }
+            final File outFile = new File(config.getOutputDir(), FilenameUtils.getBaseName(file.toString()) + "."
+                    + FilenameUtils.getExtension(tmpOutFile.toString()));
+            FileUtils.copyFile(tmpOutFile, outFile);
 
-        status.setState(Status.State.DONE);
-        Event event = new Event(file, status);
-        try {
-            queue.put(event);
-        } catch (InterruptedException ex) {
-            log.error("キューイング失敗", ex);
+            return outFile;
+        } catch (Exception ex) {
+            log.error("変換エラー", ex);
+            throw new IOException(ex);
+        } finally {
+            if (tmpInFile != null && tmpInFile.exists()) {
+                tmpInFile.delete();
+            }
+            if (tmpOutFile != null && tmpOutFile.exists()) {
+                tmpOutFile.delete();
+            }
         }
-
-        return tmpOutFile;
     }
 
-    private void createID3(Config config, File file) throws IOException {
+    private void createID3(Config config, String originalFileName, File file) throws IOException {
         File artWorkFile = null;
         try {
             NicoVideoInfoManager manager = NicoVideoInfoManager.getInstance();
