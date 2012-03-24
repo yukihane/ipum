@@ -97,7 +97,7 @@ public class Converter implements Callable<File> {
                 tmpOutFile = tmp;
             }
 
-            if (config.isUseID3()) {
+            if (dstType.isTaggable() && config.isUseID3()) {
                 createID3(config, file.getName(), tmpOutFile);
             }
 
