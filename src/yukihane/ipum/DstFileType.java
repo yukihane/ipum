@@ -1,6 +1,9 @@
 /** $Id$ */
 package yukihane.ipum;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public enum DstFileType {
 
     MP3 {
@@ -17,6 +20,7 @@ public enum DstFileType {
         }
     };
 
+    private static Logger log = LoggerFactory.getLogger(DstFileType.class);
     public abstract String getExtension();
 
     @Override
@@ -31,6 +35,7 @@ public enum DstFileType {
         } else if ("mp3".equals(ext)) {
             return MP3;
         }
+        log.error("unknown type: " + str);
         return null;
     }
 }
