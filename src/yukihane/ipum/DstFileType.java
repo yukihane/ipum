@@ -18,6 +18,11 @@ public enum DstFileType {
         public String getExtension() {
             return "aac";
         }
+    }, WAV{
+        @Override
+        public String getExtension() {
+            return "wav";
+        }
     };
 
     private static Logger log = LoggerFactory.getLogger(DstFileType.class);
@@ -34,6 +39,8 @@ public enum DstFileType {
             return AAC;
         } else if ("mp3".equals(ext)) {
             return MP3;
+        } else if("pcm_s16le".equals(ext)){
+            return WAV;
         }
         log.error("unknown type: " + str);
         return null;
