@@ -141,25 +141,29 @@ public class Converter implements Callable<File> {
         File artWorkFile = null;
         try {
             NicoVideoInfoManager manager = NicoVideoInfoManager.getInstance();
-            NicoVideoInfo cont = manager.findNicoContent(originalFileName);
             AudioFile f = AudioFileIO.read(file);
             Tag tag = f.getTag();
-
-            artWorkFile = cont.getArtWork(config.getTempDir());
-            Artwork artWork = Artwork.createArtworkFromFile(artWorkFile);
-            artWork.setImageUrl(cont.getThumbnailUrl().toString());
-            tag.addField(artWork);
-            tag.addField(FieldKey.TITLE, cont.getTitle());
-            tag.addField(FieldKey.COMMENT, cont.getVideoId() + "; " + cont.getDescription());
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(cont.getFirstRetrieve());
-            tag.addField(FieldKey.YEAR, Integer.toString(cal.get(Calendar.YEAR)));
             tag.addField(FieldKey.GENRE, "ニコニコ動画");
-            if (cont.getAuthor() != null) {
-                tag.addField(FieldKey.ARTIST, cont.getAuthor());
-            }
-            if (config.useTitleAsAlbum()) {
-                tag.addField(FieldKey.ALBUM, cont.getTitle());
+
+            NicoVideoInfo cont = manager.findNicoContent(originalFileName);
+            if (cont != null) {
+                artWorkFile = cont.getArtWork(config.getTempDir());
+                Artwork artWork = Artwork.createArtworkFromFile(artWorkFile);
+                artWork.setImageUrl(cont.getThumbnailUrl().toString());
+                tag.addField(artWork);
+                tag.addField(FieldKey.TITLE, cont.getTitle());
+                tag.addField(FieldKey.COMMENT, cont.getVideoId() + "; " + cont.getDescription());
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(cont.getFirstRetrieve());
+                tag.addField(FieldKey.YEAR, Integer.toString(cal.get(Calendar.YEAR)));
+                if (cont.getAuthor() != null) {
+                    tag.addField(FieldKey.ARTIST, cont.getAuthor());
+                }
+                if (config.useTitleAsAlbum()) {
+                    tag.addField(FieldKey.ALBUM, cont.getTitle());
+                }
+            } else {
+                log.info("nicodb管理対象外のファイルです: {}", FilenameUtils.getName(file.toString()));
             }
             f.commit();
         } catch (Exception e) {
