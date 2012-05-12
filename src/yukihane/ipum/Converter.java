@@ -140,12 +140,12 @@ public class Converter implements Callable<File> {
     private void createID3(Config config, String originalFileName, File file) throws IOException {
         File artWorkFile = null;
         try {
-            NicoVideoInfoManager manager = NicoVideoInfoManager.getInstance();
-            AudioFile f = AudioFileIO.read(file);
-            Tag tag = f.getTag();
+            final NicoVideoInfoManager manager = NicoVideoInfoManager.getInstance();
+            final AudioFile f = AudioFileIO.read(file);
+            final Tag tag = f.getTag();
             tag.addField(FieldKey.GENRE, "ニコニコ動画");
 
-            NicoVideoInfo cont = manager.findNicoContent(originalFileName);
+            final NicoVideoInfo cont = manager.findNicoContent(originalFileName);
             if (cont != null) {
                 artWorkFile = cont.getArtWork(config.getTempDir());
                 Artwork artWork = Artwork.createArtworkFromFile(artWorkFile);
@@ -153,7 +153,7 @@ public class Converter implements Callable<File> {
                 tag.addField(artWork);
                 tag.addField(FieldKey.TITLE, cont.getTitle());
                 tag.addField(FieldKey.COMMENT, cont.getVideoId() + "; " + cont.getDescription());
-                Calendar cal = Calendar.getInstance();
+                final Calendar cal = Calendar.getInstance();
                 cal.setTime(cont.getFirstRetrieve());
                 tag.addField(FieldKey.YEAR, Integer.toString(cal.get(Calendar.YEAR)));
                 if (cont.getAuthor() != null) {
