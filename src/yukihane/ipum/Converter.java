@@ -163,11 +163,11 @@ public class Converter implements Callable<File> {
                     tag.addField(FieldKey.ALBUM, cont.getTitle());
                 }
             } else {
-                log.info("nicodb管理対象外のファイルです: {}", FilenameUtils.getName(file.toString()));
+                log.info("nicodb管理対象外のファイルです: {}", originalFileName);
             }
             f.commit();
         } catch (Exception e) {
-            log.error("ID3タグ作成に失敗: " + FilenameUtils.getName(file.toString()), e);
+            log.error("ID3タグ作成に失敗: {}", originalFileName, e);
             throw new IOException(e);
         } finally {
             if (artWorkFile != null) {
